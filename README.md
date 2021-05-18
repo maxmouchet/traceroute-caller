@@ -3,6 +3,28 @@
 
 ## Local Development
 
+You can clone the traceroute-caller repo on your development
+workstation to edit, compile, and test it.  However, note that because
+`paris-traceroute` is included as a Git submodule, you have to use the
+`--recursive` flag when cloning the repo or run the following `git` command
+inside the repo after it is cloned.
+
+```sh
+git submodule update --init --recursive
+```
+
+The safest way to build `traceroute-caller` is to use the repo's
+`Dockerfile` to build a container image and then copy out the
+`traceroute-caller` binary.
+
+```sh
+docker build --target build_caller --tag traceroute-caller:latest .
+docker run -it --name trc:latest --entrypoint /bin/bash traceroute-caller
+docker cp trc:/go/bin/traceroute-caller .
+```
+
+## Local Testing
+
 Using `docker-compose` you can run a local instance of traceroute-caller that
 operates in concert with events from `measurementlab/tcpinfo` and using
 annotation from `measurement-lab/uuid-annotator`.

@@ -1,0 +1,14 @@
+steps:
+- name: 'gcr.io/cloud-builders/git'
+  args: ['submodule', 'update', '--init', '--recursive']
+  timeout: 600s
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build the traceroute-caller container image'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/traceroute-caller:$BRANCH_NAME', '.']
+  timeout: 2400s
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push the traceroute-caller container image to gcr.io'
+  args: ['push', 'gcr.io/$PROJECT_ID/traceroute-caller:$BRANCH_NAME']
+  timeout: 120s
+images: ['gcr.io/$PROJECT_ID/traceroute-caller:$BRANCH_NAME']
+timeout: 3600s

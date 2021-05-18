@@ -1,16 +1,16 @@
 # Build the traceroute-caller binary
 FROM golang:1.13 as build_caller
 ADD . /go/src/github.com/m-lab/traceroute-caller
-RUN rm /go/src/github.com/m-lab/traceroute-caller/Dockerfile
 ENV GOARCH amd64
-ENV CGO_ENABLED 0
 ENV GOOS linux
 WORKDIR /go/src/github.com/m-lab/traceroute-caller
-RUN go get -v \
-      -ldflags "-X github.com/m-lab/go/prometheusx.GitShortCommit=$(git log -1 --format=%h)" \
-      .
-RUN chmod -R a+rx /go/bin/traceroute-caller
-
+RUN apt-get update && \
+    apt-get install -y scamper
+RUN go get -v -t ./... && \
+    go vet ./... && \
+    go test ./... -race
+ENV CGO_ENABLED 0
+RUN go get -v -ldflags "-X github.com/m-lab/go/prometheusx.GitShortCommit=$(git log -1 --format=%h)" .
 
 # Build the binaries that are called by traceroute-caller
 FROM ubuntu:20.04 as build_tracers
